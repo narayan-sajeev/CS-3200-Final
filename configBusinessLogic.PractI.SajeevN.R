@@ -192,7 +192,7 @@ new_reporter = "mechanic"
 # Define SQL
 sql = paste0("CALL storeNewIncident('", 
              iid, "', '", new_airline,  "', ", new_flight,  ", '", 
-             new_date,  "', '", new_airport, "', '", new_airport, "', '",
+             new_date,  "', '", new_airport, "', '", new_aircraft, "', '",
              new_incident,  "', '", new_severity,  "', ", new_delay,  ", ",
              new_injuries,  ", '", new_reporter,
              "')")
