@@ -74,15 +74,17 @@ dbGetQuery(con, "SELECT MONTHNAME(date) as Month,
 
 ## Analysis by Airline
 
-```{r createAirlineView, echo=FALSE, include=FALSE}
-dbExecute(con, "DROP VIEW IF EXISTS AirlineView")
+```{sql dropView, connection=con, echo=FALSE}
+DROP VIEW IF EXISTS AirlineView
+```
 
-dbExecute(con, "CREATE VIEW AirlineView AS
-          SELECT airlineCode as Airline,
-          COUNT(*) as IncidentCount,
-          AVG(delay) as AverageDelay
-          FROM Incident
-          GROUP BY airlineCode")
+```{sql createAirlineView, connection=con, echo=FALSE}
+CREATE VIEW AirlineView AS
+SELECT airlineCode as Airline,
+COUNT(*) as IncidentCount,
+AVG(delay) as AverageDelay
+FROM Incident
+GROUP BY airlineCode
 ```
 
 ```{r airlineAnalysis, echo=FALSE}
