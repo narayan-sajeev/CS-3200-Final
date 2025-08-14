@@ -6,14 +6,14 @@
 library(RMySQL)
 
 # Define settings
-db_host_aiven <- "mysql-cs3200-final-northeastern-526e.l.aivencloud.com"
-db_port_aiven <- 28849
-db_name_aiven <- "defaultdb"
-db_user_aiven <- "avnadmin"
-db_pwd_aiven <- "AVNS_6TJXHpMjE7TJa78fR1w"
+db_host_aiven = "mysql-cs3200-final-northeastern-526e.l.aivencloud.com"
+db_port_aiven = 28849
+db_name_aiven = "defaultdb"
+db_user_aiven = "avnadmin"
+db_pwd_aiven = "AVNS_6TJXHpMjE7TJa78fR1w"
 
 # Embedded SSL certificate
-db_cert <- "
+db_cert = "
 -----BEGIN CERTIFICATE-----
 MIIEUDCCArigAwIBAgIUO1pRHbx3609yHTsZVnB7CpJy500wDQYJKoZIhvcNAQEM
 BQAwQDE+MDwGA1UEAww1MWQ1MGYxYzktODE2OC00YzdmLWIxMDgtMjkzZTdkZGM2
@@ -43,7 +43,7 @@ o/NCZh5uMaEQdeEXIjR5aIEoxPTU7vPWu2OPSSyQmZREAKX8wYkGTI0bPTxg9gTG
 "
 
 # Connect to MySQL server
-con <-  dbConnect(RMySQL::MySQL(), 
+con =  dbConnect(RMySQL::MySQL(), 
                   user = db_user_aiven, 
                   password = db_pwd_aiven,
                   dbname = db_name_aiven, 
