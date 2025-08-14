@@ -67,7 +67,7 @@ dbGetQuery(con, "SELECT MONTHNAME(date) as Month,
            incidentName as IncidentName,
            COUNT(*) as Count
            FROM Incident
-           GROUP BY MONTHNAME(date), MONTH(date), IncidentName
+           GROUP BY Month, MONTH(date), IncidentName
            ORDER BY MONTH(date)") %>%
           kable(caption="Incident Type and Frequency by Month", longtable = TRUE)
 ```
