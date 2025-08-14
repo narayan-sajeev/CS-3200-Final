@@ -5,7 +5,6 @@ author: "Narayan Sajeev"
 date: "Summer 2 2025"
 output:
   pdf_document: default
-  html_notebook: default
 ---
 
 ```{r setup, echo=FALSE}
