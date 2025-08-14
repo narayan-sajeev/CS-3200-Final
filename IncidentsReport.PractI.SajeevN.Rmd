@@ -1,0 +1,107 @@
+---
+title: "Analyze Incidents & Flights"
+subtitle: "CS3200 Final Project"
+author: "Narayan Sajeev"
+date: "Summer 2 2025"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+```{r setup, echo=FALSE}
+# Import modules & suppress messages
+suppressMessages({
+  library(RMySQL)
+})
+library(knitr)
+library(kableExtra)
+
+# Define settings
+db_host_aiven = "mysql-cs3200-final-northeastern-526e.l.aivencloud.com"
+db_port_aiven = 28849
+db_name_aiven = "defaultdb"
+db_user_aiven = "avnadmin"
+db_pwd_aiven = "AVNS_6TJXHpMjE7TJa78fR1w"
+
+# Embedded SSL certificate
+db_cert = "
+-----BEGIN CERTIFICATE-----
+MIIEUDCCArigAwIBAgIUO1pRHbx3609yHTsZVnB7CpJy500wDQYJKoZIhvcNAQEM
+BQAwQDE+MDwGA1UEAww1MWQ1MGYxYzktODE2OC00YzdmLWIxMDgtMjkzZTdkZGM2
+NmMxIEdFTiAxIFByb2plY3QgQ0EwHhcNMjUwODEyMDAxMDQzWhcNMzUwODEwMDAx
+MDQzWjBAMT4wPAYDVQQDDDUxZDUwZjFjOS04MTY4LTRjN2YtYjEwOC0yOTNlN2Rk
+YzY2YzEgR0VOIDEgUHJvamVjdCBDQTCCAaIwDQYJKoZIhvcNAQEBBQADggGPADCC
+AYoCggGBAMnXr1R7Wf6oMySyX9rQtPrPpSBGJpINf0aDMpO6a81xaqbAGEwD++Ju
+rrOWKGpps3ZjXQIfTdO0WzFAvgQ11bej1qJKL5liJxWfs+QGW4OSSYWgE8mBNR9I
+wZJfvA9eIhCKZUnFjMUrvXeggVaH+2xYh4g2LV0BnuI7cU65Mnz1QCC0GB2Acqyl
+XLveWXidDEFTTdzLg+HBMHTNgjUgV6PQcD8egVUl5ePyr+CZxl6/nqfjcB2Cjbya
+vT4yW+LwRxZv/vILBNXn8qv5EemHuQIrYyzWYszu0aZeQIH/KTwKt2WAb7IKKYQ5
+ff0DdSfx0QsySrFZuTQ3/Sd04Ch3a+rrAmAUE0rVvzqtFT8Vb510p2A377HyGPd5
+dSddnNKOQlf8mvzMBPyODhG8HYV0SJ7xPY7aCjzdmhr82mVlFGQJ7B42vM0lfGIH
+k/wPUT1q/espSoKYIM2vivkrg2KFFTKfKdnJVf2i1HX4KUd8IVcxWNIa+VXJ1+sO
+4qDqGSgqrQIDAQABo0IwQDAdBgNVHQ4EFgQU7GNjNV9068HkGF+ANoLFEiXHMtkw
+EgYDVR0TAQH/BAgwBgEB/wIBADALBgNVHQ8EBAMCAQYwDQYJKoZIhvcNAQEMBQAD
+ggGBAC8Q2f5ULd7miSx6Ph5l6HwsfAVqtMUsef5jTYMPKU2y/k8IzdqFuYLNBvb0
+SEVbj5PbCTBIAAHI4T4oRsz5M7xrN/PpbwiNoaq+iqn0v04SS0nK7NqB0riRq08+
+8ubJxp5xe/fgxYxpmgwjwisxfyaRKINj+mJMomJhwSThghsf0fCWq3cB8PHIi6R2
+T5EB3mVsxv8WAaLdkrdiuW8k5wLIRTpVKj3wU+hzN6fnDzD+8/ClkVbowthc9rbY
+BHBCmpnCf0wPwa33XOWOUdLXqJaZVmE8ZKgQ7BcYOf8FLi5LHQXN4FUxUbIZnKXa
+L328hjdsdWCX3iD50T7ZhCdrMZtyrQvxf8H2g0zuZJiuTNC7BXPrqftvwe3FwYk2
+Ni6PNPJTJQO8nG/dW7Qxw9ap0Y+0AJ8gd9dzEFyCIYKk2Tger281uY6h2XyWYQtz
+o/NCZh5uMaEQdeEXIjR5aIEoxPTU7vPWu2OPSSyQmZREAKX8wYkGTI0bPTxg9gTG
+/TABQw==
+-----END CERTIFICATE-----
+"
+
+# Connect to MySQL server
+con =  dbConnect(RMySQL::MySQL(), user = db_user_aiven,
+                 password = db_pwd_aiven, dbname = db_name_aiven,
+                 host = db_host_aiven, port = db_port_aiven,
+                 sslmode = "require", sslcert = db_cert)
+```
+
+## Analysis by Month
+
+```{r monthlyAnalysis, echo=FALSE}
+
+dbGetQuery(con, "SELECT MONTHNAME(date) as Month,
+           incidentName as IncidentName,
+           COUNT(*) as Count
+           FROM Incident
+           GROUP BY MONTHNAME(date), MONTH(date), IncidentName
+           ORDER BY MONTH(date), IncidentName") %>%
+          kable(format = "latex", caption="Incident Type and Frequency by Month", longtable = TRUE)
+```
+
+## Analysis by Airline
+
+```{r createAirlineView, echo=FALSE, results="hide"}
+dbExecute(con, "DROP VIEW IF EXISTS AirlineView;")
+
+dbExecute(con, "CREATE VIEW AirlineView AS
+          SELECT airlineCode as Airline,
+          COUNT(*) as IncidentCount,
+          AVG(delay) as AverageDelay
+          FROM Incident
+          GROUP BY airlineCode")
+```
+
+```{r airlineAnalysis, echo=FALSE}
+suppressWarnings({
+dbGetQuery(con, "SELECT * FROM AirlineView") %>%
+          kable(format = "latex", caption="Incident Count and Average Delay by Airline", longtable = TRUE)
+})
+```
+
+## Trend by Year
+
+```{r trendGraph, echo=FALSE}
+data = dbGetQuery(con, "SELECT YEAR(date) as year,
+                  COUNT(*) as count
+                  FROM Incident
+                  GROUP BY year
+                  ORDER BY year")
+plot(data$year, data$count, main="Incident Count over Time", xlab="Year", ylab="Incident Count", col="blue", type="l")
+text(data$year, data$count, labels=data$count, pos=1, cex=0.6)
+legend("bottom", legend="Total Incidents", col="blue", lwd=1)
+```
