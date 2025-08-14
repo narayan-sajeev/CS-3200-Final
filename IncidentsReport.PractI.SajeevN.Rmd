@@ -75,7 +75,7 @@ dbGetQuery(con, "SELECT MONTHNAME(date) as Month,
 ## Analysis by Airline
 
 ```{r createAirlineView, echo=FALSE, results="hide"}
-dbExecute(con, "DROP VIEW IF EXISTS AirlineView;")
+dbExecute(con, "DROP VIEW IF EXISTS AirlineView")
 
 dbExecute(con, "CREATE VIEW AirlineView AS
           SELECT airlineCode as Airline,
