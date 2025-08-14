@@ -88,7 +88,7 @@ flightNumber = sample1[, 2]
 # Retrieve date
 date = sample1[, 3]
 
-# Get an incident name, severity type, delay, number of injuries & reporter name & date
+# Get an incident name, severity type, delay, number of injuries & reporter name
 sample2 = dbGetQuery(con, "SELECT incidentName, severityType,
                     delay, numInjuries, reporterName
                     FROM Incident
