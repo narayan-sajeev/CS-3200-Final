@@ -113,8 +113,11 @@ sql = paste0("CALL storeIncident('",
 # Add incident
 newIncident1 = dbExecute(con, sql)
 
+# Define SQL query for printing
+sql1 = paste0("SELECT * FROM Incident WHERE iid = '", iid, "'")
+
 # Print new incident
-dbGetQuery(con, "SELECT * FROM Incident WHERE iid = 'i20000'")
+dbGetQuery(con, sql1)
 
 # --------------------
 
@@ -177,7 +180,7 @@ dbExecute(con, "CREATE PROCEDURE storeNewIncident(
           ")
 
 # Define incident attributes
-iid = "i30000"
+new_iid = "i30000"
 new_airline = "ZZ"
 new_flight = 9999
 new_date = "2025-08-01"
@@ -191,7 +194,7 @@ new_reporter = "mechanic"
 
 # Define SQL
 sql = paste0("CALL storeNewIncident('", 
-             iid, "', '", new_airline,  "', ", new_flight,  ", '", 
+             new_iid, "', '", new_airline,  "', ", new_flight,  ", '", 
              new_date,  "', '", new_airport, "', '", new_aircraft, "', '",
              new_incident,  "', '", new_severity,  "', ", new_delay,  ", ",
              new_injuries,  ", '", new_reporter,
@@ -200,8 +203,11 @@ sql = paste0("CALL storeNewIncident('",
 # Add incident
 newIncident2 = dbExecute(con, sql)
 
+# Define SQL query for printing
+sql2 = paste0("SELECT * FROM Incident WHERE iid = '", new_iid, "'")
+
 # Print new incident
-dbGetQuery(con, "SELECT * FROM Incident WHERE iid = 'i30000'")
+dbGetQuery(con, sql2)
 
 # Disconnect from database
 dbDisconnect(con)
